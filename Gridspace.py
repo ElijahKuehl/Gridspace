@@ -108,16 +108,17 @@ def select_robo():
         print("(N)ew  (Q)uit  si(M)ulate  or select a robot.")
         alt_list = []
         for robot in robots:
-            print(robot.code, end="  ")
             alt_list.append(robot.code)
+        if len(robots) > 0:
+            print("Robos:", end=" ")
+        print(str(alt_list).replace("[", "").replace("]", ""))
         select = input()
-        print()
-        if select.upper() in ["N", "NEW"]:
+        if select.upper() in ["N", "NEW", "+"]:
             Robot()
             return robots[-1]
-        elif select.upper() in ["Q", "QUIT"]:
+        elif select.upper() in ["Q", "QUIT", "-"]:
             quit()
-        elif select.upper() in ["M", "SIMULATE"]:
+        elif select.upper() in ["M", "SIMULATE", "*"]:
             simulate()
         try:
             robo = robots[alt_list.index(int(select))]
@@ -132,23 +133,22 @@ def ui():
     while True:
         print("Operating Robo " + str(current_robo.code))
         print("(S)elect  (U)p  (D)own  (L)eft  (R)ight  (K)ill  lo(C)k")
-        print()
         select = input()
-        if select.upper() in ["S", "SELECT"]:
+        print()
+        if select.upper() in ["S", "SELECT", "+"]:
             current_robo = select_robo()
-        elif select.upper() in ["U", "UP"]:
+        elif select.upper() in ["U", "UP", "8"]:
             current_robo.move_north()
-        elif select.upper() in ["D", "DOWN"]:
+        elif select.upper() in ["D", "DOWN", "2"]:
             current_robo.move_south()
-        elif select.upper() in ["L", "LEFT"]:
+        elif select.upper() in ["L", "LEFT", "4"]:
             current_robo.move_west()
-        elif select.upper() in ["R", "RIGHT"]:
+        elif select.upper() in ["R", "RIGHT", "6"]:
             current_robo.move_east()
-        elif select.upper() in ["K", "KILL"]:
+        elif select.upper() in ["K", "KILL", "-"]:
             current_robo = current_robo.kill()
-        elif select.upper() in ["C", "LOCK"]:
+        elif select.upper() in ["C", "LOCK", "/"]:
             current_robo = current_robo.lock()
-        # show_grid(current_robo)
 
 
 class Robot:
@@ -224,7 +224,6 @@ class Robot:
         print("Robo '" + str(self.code) + "' destroyed.")
         grid[self.r][self.c] = "O"
         robots.remove(self)
-        # show_grid()
         return select_robo()
 
     def lock(self):
