@@ -1,95 +1,117 @@
 from time import sleep
 
-robots = []
-grid = []
-for r in range(0, 7):
-    grid.append([])
-    if r == 0 or r == 6:
-        for c in range(0, 7):
-            grid[r].append("-")
-    else:
-        for c in range(0, 7):
-            if c == 0 or c == 6:
-                grid[r].append("|")
-            else:
-                grid[r].append("O")
+
+def make_grid(x, y):
+    grid = []
+    for r in range(0, y+2):
+        grid.append([])
+        if r == 0 or r == y+1:
+            for c in range(0, x+2):
+                grid[r].append("-")
+        else:
+            for c in range(0, x+2):
+                if c == 0 or c == x+1:
+                    grid[r].append("|")
+                else:
+                    grid[r].append("O")
+    return grid
 
 
 def show_grid(current=None):
-    if current is None:
-        for row in grid[::-1]:
-            for column in row:
-                if len(str(column)) == 1:
-                    print(column, end="  ")
-                elif len(str(column)) == 2:
-                    print(column, end=" ")
-            print()
-    else:
+    if current is not None:
         print(current.position())
-        for row in range(len(grid)-1, -1, -1):
-            for column in range(0, len(grid[row])):
+    for row in range(len(grid)-1, -1, -1):
+        for column in range(0, len(grid[row])):
+            if grid[row][column] in ["-", "|", "0"]:
+                color = "\033[91m"
+            elif grid[row][column] != "O":
+                color = "\033[93m"
+            else:
+                color = ""
+            if current is not None:
                 if row == current.r and column == current.c:
-                    if len(str(grid[row][column])) == 1:
-                        print("\033[92m" + str(grid[row][column]) + "\033[0m", end="  ")
-                    elif len(str(grid[row][column])) == 2:
-                        print("\033[92m" + str(grid[row][column]) + "\033[0m", end=" ")
-                else:
-                    print(grid[row][column], end="  ")
-            print()
+                    color = "\033[92m"
+            extra = ""
+            for num in range(0, 3-len(str(grid[row][column]))):
+                extra += " "
+            print(color + str(grid[row][column]) + "\033[0m", end=extra)
+        print()
     print()
-    sleep(1)
 
 
 def simulate():
     show_grid()
+    t = 0.75
     try:
         RoboOne = Robot()
+        sleep(t)
         RoboOne.move_north(6)
+        sleep(t)
         RoboOne.move_east(2)
+        sleep(t)
         RoboOne.move_south()
+        sleep(t)
         RoboOne.move_west(1)
+        sleep(t)
     except:
         pass
     try:
         RoboTwo = Robot()
+        sleep(t)
         RoboTwo.move_north(2)
+        sleep(t)
         RoboTwo.move_east(3)
+        sleep(t)
     except:
         pass
     try:
         RoboThree = Robot()
+        sleep(t)
         RoboThree.move_east(10)
+        sleep(t)
     except:
         pass
     try:
         RoboFour = Robot()
+        sleep(t)
         RoboFour.move_north(10)
+        sleep(t)
     except:
         pass
     try:
         RoboFive = Robot()
+        sleep(t)
     except:
         pass
     try:
+        show_grid(RoboTwo)
+        sleep(t)
         RoboTwo.move_south(10)
+        sleep(t)
     except:
         pass
     try:
         RoboFive.move_east(10)
+        sleep(t)
         RoboFive.move_north(10)
+        sleep(t)
         RoboFive.move_east(10)
+        sleep(t)
     except:
         pass
-    show_grid()
+    print("Simulation complete")
 
 
 def select_robo():
     while True:
+        show_grid()
         print("(N)ew  (Q)uit  si(M)ulate  or select a robot.")
+        alt_list = []
         for robot in robots:
             print(robot.code, end="  ")
-        print()
+            alt_list.append(robot.code)
         select = input()
+        print()
         if select.upper() in ["N", "NEW"]:
             Robot()
             return robots[-1]
@@ -98,8 +120,9 @@ def select_robo():
         elif select.upper() in ["M", "SIMULATE"]:
             simulate()
         try:
-            show_grid(robots[int(select)-1])
-            return robots[int(select)-1]
+            robo = robots[alt_list.index(int(select))]
+            show_grid(robo)
+            return robo
         except:
             pass
 
@@ -107,7 +130,9 @@ def select_robo():
 def ui():
     current_robo = select_robo()
     while True:
-        print("(S)elect  (U)p  (D)own  (L)eft  (R)ight")
+        print("Operating Robo " + str(current_robo.code))
+        print("(S)elect  (U)p  (D)own  (L)eft  (R)ight  (K)ill  lo(C)k")
+        print()
         select = input()
         if select.upper() in ["S", "SELECT"]:
             current_robo = select_robo()
@@ -119,20 +144,29 @@ def ui():
             current_robo.move_west()
         elif select.upper() in ["R", "RIGHT"]:
             current_robo.move_east()
+        elif select.upper() in ["K", "KILL"]:
+            current_robo = current_robo.kill()
+        elif select.upper() in ["C", "LOCK"]:
+            current_robo = current_robo.lock()
+        # show_grid(current_robo)
 
 
 class Robot:
     def __init__(self, column=1, row=1):
         if grid[column][row] == "O":
-            robots.append(self)
-            self.code = len(robots)
-            print("Robo '" + str(self.code) + "' created!")
+            if len(robots) == 0:
+                self.code = 1
+            else:
+                self.code = robots[-1].code + 1
             self.r = row
             self.c = column
-            grid[self.c][self.r] = self.code
+            print("Robo '" + str(self.code) + "' created!")
+            robots.append(self)
+            grid[self.r][self.c] = self.code
             show_grid(self)
         else:
             print("Couldn't create Robo, (1,1) is occupied.")
+            show_grid()
 
     def move_south(self, distance=1):
         moved = 0
@@ -186,9 +220,30 @@ class Robot:
         print("'{0}' moved left {1} spaces.".format(self.code, moved))
         show_grid(self)
 
+    def kill(self):
+        print("Robo '" + str(self.code) + "' destroyed.")
+        grid[self.r][self.c] = "O"
+        robots.remove(self)
+        # show_grid()
+        return select_robo()
+
+    def lock(self):
+        # TODO: Unlocked
+        if not (self.c == 1 and self.r == 1):
+            print("Robo '" + str(self.code) + "' locked in position.")
+            grid[self.r][self.c] = "0"
+            robots.remove(self)
+            return select_robo()
+        else:
+            print("Cannot lock on (1,1)")
+            return self
+
     def position(self):
         return "'{0}' currently at: ({1},{2})".format(self.code, self.c, self.r)
 
 
 if __name__ == "__main__":
+    robots = []
+    print("What size do you want your grid?")
+    grid = make_grid(int(input("X dimension: ")), int(input("Y dimension: ")))
     ui()
