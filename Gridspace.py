@@ -1,3 +1,6 @@
+# TODO: Add listener, so that you dont need to press enter.
+
+
 class Robot:
     def __init__(self, column=1, row=1):
         if grid[column][row] == "O":
@@ -90,18 +93,23 @@ class Robot:
 
 def make_grid(x, y):
     grid = []
-    for r in range(0, y+2):
-        grid.append([])
-        if r == 0 or r == y+1:
-            for c in range(0, x+2):
-                grid[r].append("-")
-        else:
-            for c in range(0, x+2):
-                if c == 0 or c == x+1:
-                    grid[r].append("|")
-                else:
-                    grid[r].append("O")
-    return grid
+    if x <= 100 and y <= 100:
+        for r in range(0, y+2):
+            grid.append([])
+            if r == 0 or r == y+1:
+                for c in range(0, x+2):
+                    grid[r].append("-")
+            else:
+                for c in range(0, x+2):
+                    if c == 0 or c == x+1:
+                        grid[r].append("|")
+                    else:
+                        grid[r].append("O")
+        return grid
+    else:
+        print("This grid will be too massive to reasonably be used.")
+        print("If you really want to make it bigger, change the code: 'if x <= 100 and y <= 100:' around line 96.")
+        quit()
 
 
 def show_grid(current=None):
