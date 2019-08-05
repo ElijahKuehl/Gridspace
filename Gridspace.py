@@ -1,6 +1,3 @@
-from time import sleep
-
-
 class Robot:
     def __init__(self, column=1, row=1):
         if grid[column][row] == "O":
@@ -130,10 +127,14 @@ def show_grid(current=None):
 
 
 def ui():
+    global num
     current_robo = select_robo()
     while True:
         print("Operating Robo " + str(current_robo.code))
-        print("(S)elect  (U)p  (D)own  (L)eft  (R)ight  (K)ill  lo(C)k")
+        if not num:
+            print("(S)elect  (U)p  (D)own  (L)eft  (R)ight  (K)ill  lo(C)k")
+        elif num:
+            print("NumPad arrows to move.  Select(+)  Kill(-)  Lock(/)")
         select = input()
         print()
         if select.upper() in ["S", "SELECT", "+"]:
@@ -153,6 +154,7 @@ def ui():
 
 
 def simulate():
+    from time import sleep
     show_grid()
     t = 0.75
     try:
@@ -198,6 +200,8 @@ def simulate():
         sleep(t)
         RoboTwo.move_south(10)
         sleep(t)
+        show_grid(RoboFive)
+        sleep(t)
         RoboFive.move_east(10)
         sleep(t)
         RoboFive.move_north(10)
@@ -210,9 +214,13 @@ def simulate():
 
 
 def select_robo():
+    global num
     while True:
         show_grid()
-        print("(N)ew  (Q)uit  si(M)ulate  or select a robot.")
+        if not num:
+            print("(N)ew  (Q)uit  si(M)ulate  NumPad(.)  or select a robot.")
+        elif num:
+            print("New(+)  Quit(-)  Simulate(*)  Letters(.)  or select a robot.")
         alt_list = []
         for robot in robots:
             alt_list.append(robot.code)
@@ -227,6 +235,8 @@ def select_robo():
             quit()
         elif select.upper() in ["M", "SIMULATE", "*"]:
             simulate()
+        elif select.upper() in ["."]:
+            num = not num
         try:
             robo = robots[alt_list.index(int(select))]
             show_grid(robo)
@@ -237,6 +247,7 @@ def select_robo():
 
 if __name__ == "__main__":
     robots = []
+    num = False
     print("What size do you want your grid?")
     grid = make_grid(int(input("X dimension: ")), int(input("Y dimension: ")))
     ui()
