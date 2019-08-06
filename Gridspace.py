@@ -1,6 +1,7 @@
-# TODO: Add listener, so that you dont need to press enter.
+from time import sleep
 
 
+# Robot, make_grid(), show_grid(), and robots = [] are the base program, and can be used for other projects, like chess!
 class Robot:
     def __init__(self, column=1, row=1):
         if grid[column][row] == "O":
@@ -92,23 +93,23 @@ class Robot:
 
 
 def make_grid(x, y):
-    grid = []
+    made_grid = []
     if x <= 100 and y <= 100:
         for r in range(0, y+2):
-            grid.append([])
+            made_grid.append([])
             if r == 0 or r == y+1:
                 for c in range(0, x+2):
-                    grid[r].append("-")
+                    made_grid[r].append("-")
             else:
                 for c in range(0, x+2):
                     if c == 0 or c == x+1:
-                        grid[r].append("|")
+                        made_grid[r].append("|")
                     else:
-                        grid[r].append("O")
-        return grid
+                        made_grid[r].append("O")
+        return made_grid
     else:
         print("This grid will be too massive to reasonably be used.")
-        print("If you really want to make it bigger, change the code: 'if x <= 100 and y <= 100:' around line 96.")
+        print("If you really want to make it bigger, change the code: 'if x <= 100 and y <= 100:' around line 93.")
         quit()
 
 
@@ -127,7 +128,7 @@ def show_grid(current=None):
                 if row == current.r and column == current.c:
                     color = "\033[92m"
             extra = ""
-            for num in range(0, 3-len(str(grid[row][column]))):
+            for i in range(0, 3-len(str(grid[row][column]))):
                 extra += " "
             print(color + str(grid[row][column]) + "\033[0m", end=extra)
         print()
@@ -140,29 +141,35 @@ def ui():
     while True:
         print("Operating Robo " + str(current_robo.code))
         if not num:
-            print("(S)elect  (U)p  (D)own  (L)eft  (R)ight  (K)ill  lo(C)k")
+            print("WASD to move  (M)enu  (K)ill  (L)ock")
         elif num:
             print("NumPad arrows to move.  Select(+)  Kill(-)  Lock(/)")
-        select = input()
+        select = input().upper()
         print()
-        if select.upper() in ["S", "SELECT", "+"]:
+        if select == "WWSSADADBA" or select == "88224646BA":
+            input("Hey you found an easter egg!")
+        if "M" in select or "+" in select:
             current_robo = select_robo()
-        elif select.upper() in ["U", "UP", "8"]:
-            current_robo.move_north()
-        elif select.upper() in ["D", "DOWN", "2"]:
-            current_robo.move_south()
-        elif select.upper() in ["L", "LEFT", "4"]:
-            current_robo.move_west()
-        elif select.upper() in ["R", "RIGHT", "6"]:
-            current_robo.move_east()
-        elif select.upper() in ["K", "KILL", "-"]:
+        elif "K" in select or "-" in select:
             current_robo = current_robo.kill()
-        elif select.upper() in ["C", "LOCK", "/"]:
+        elif "L" in select or "/" in select:
             current_robo = current_robo.lock()
+        else:
+            for key in select:
+                if key in ["W", "8"]:
+                    current_robo.move_north()
+                elif key in ["S", "2"]:
+                    current_robo.move_south()
+                elif key in ["A", "4"]:
+                    current_robo.move_west()
+                elif key in ["D", "6"]:
+                    current_robo.move_east()
+                if len(select) > 1:
+                    sleep(0.75)
+
 
 
 def simulate():
-    from time import sleep
     show_grid()
     t = 0.75
     try:
@@ -226,7 +233,7 @@ def select_robo():
     while True:
         show_grid()
         if not num:
-            print("(N)ew  (Q)uit  si(M)ulate  NumPad(.)  or select a robot.")
+            print("(N)ew  (Q)uit  simulat(E)  NumPad(.)  or select a robot.")
         elif num:
             print("New(+)  Quit(-)  Simulate(*)  Letters(.)  or select a robot.")
         alt_list = []
@@ -236,12 +243,12 @@ def select_robo():
             print("Robos:", end=" ")
         print(str(alt_list).replace("[", "").replace("]", ""))
         select = input()
-        if select.upper() in ["N", "NEW", "+"]:
+        if select.upper() in ["N", "+"]:
             Robot()
             return robots[-1]
-        elif select.upper() in ["Q", "QUIT", "-"]:
+        elif select.upper() in ["Q", "-"]:
             quit()
-        elif select.upper() in ["M", "SIMULATE", "*"]:
+        elif select.upper() in ["E", "*"]:
             simulate()
         elif select.upper() in ["."]:
             num = not num
@@ -255,6 +262,7 @@ def select_robo():
 
 if __name__ == "__main__":
     robots = []
+    
     num = False
     print("What size do you want your grid?")
     grid = make_grid(int(input("X dimension: ")), int(input("Y dimension: ")))
