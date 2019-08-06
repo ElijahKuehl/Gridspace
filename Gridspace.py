@@ -1,6 +1,7 @@
 from time import sleep
 
 
+# TODO: Shoving, bonk into a wall.
 # Robot, make_grid(), show_grid(), and robots = [] are the base program, and can be used for other projects, like chess!
 class Robot:
     def __init__(self, column=1, row=1):
@@ -135,6 +136,7 @@ def show_grid(current=None):
     print()
 
 
+# UI past this point
 def ui():
     global num
     current_robo = select_robo()
@@ -166,7 +168,6 @@ def ui():
                     current_robo.move_east()
                 if len(select) > 1:
                     sleep(0.75)
-
 
 
 def simulate():
@@ -233,7 +234,7 @@ def select_robo():
     while True:
         show_grid()
         if not num:
-            print("(N)ew  (Q)uit  simulat(E)  NumPad(.)  or select a robot.")
+            print("(N)ew  (Q)uit  (E)mulate  NumPad(.)  or select a robot.")
         elif num:
             print("New(+)  Quit(-)  Simulate(*)  Letters(.)  or select a robot.")
         alt_list = []
@@ -262,7 +263,7 @@ def select_robo():
 
 if __name__ == "__main__":
     robots = []
-    
+
     num = False
     print("What size do you want your grid?")
     grid = make_grid(int(input("X dimension: ")), int(input("Y dimension: ")))
